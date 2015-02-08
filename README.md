@@ -1,3 +1,5 @@
+#rails-angularjs <a href="http://badge.fury.io/gh/alexkpek%2Frails-angularjs"><img src="https://badge.fury.io/gh/alexkpek%2Frails-angularjs.svg" alt="GitHub version" height="18"></a>
+
 Rails-angularjs wraps the [Angular.js](http://angularjs.org) library for use in Rails 3.1 and above. Original version was made by [Hirav Gandhi](https://github.com/hiravgandhi/angularjs-rails). Main difference is that this version will be updating more frequiently, for unstable it's uses angularjs version 1.4.0 and it's serve minified version of files.
 
 ## Usage
