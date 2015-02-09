@@ -9190,7 +9190,7 @@ return jQuery;
 }));
 
 /**
- * @license AngularJS v1.4.0-beta.3
+ * @license AngularJS v1.4.0-beta.4
  * (c) 2010-2015 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -9249,7 +9249,7 @@ function minErr(module, ErrorConstructor) {
       return match;
     });
 
-    message += '\nhttp://errors.angularjs.org/1.4.0-beta.3/' +
+    message += '\nhttp://errors.angularjs.org/1.4.0-beta.4/' +
       (module ? module + '/' : '') + code;
 
     for (i = SKIP_INDEXES, paramPrefix = '?'; i < templateArgs.length; i++, paramPrefix = '&') {
@@ -9319,6 +9319,7 @@ function minErr(module, ErrorConstructor) {
   shallowCopy: true,
   equals: true,
   csp: true,
+  jq: true,
   concat: true,
   sliceArgs: true,
   bind: true,
@@ -10162,7 +10163,61 @@ var csp = function() {
   return (csp.isActive_ = active);
 };
 
+/**
+ * @ngdoc directive
+ * @module ng
+ * @name ngJq
+ *
+ * @element ANY
+ * @param {string=} the name of the library available under `window`
+ * to be used for angular.element
+ * @description
+ * Use this directive to force the angular.element library.  This should be
+ * used to force either jqLite by leaving ng-jq blank or setting the name of
+ * the jquery variable under window (eg. jQuery).
+ *
+ * Since this directive is global for the angular library, it is recommended
+ * that it's added to the same element as ng-app or the HTML element, but it is not mandatory.
+ * It needs to be noted that only the first instance of `ng-jq` will be used and all others
+ * ignored.
+ *
+ * @example
+ * This example shows how to force jqLite using the `ngJq` directive to the `html` tag.
+ ```html
+ <!doctype html>
+ <html ng-app ng-jq>
+ ...
+ ...
+ </html>
+ ```
+ * @example
+ * This example shows how to use a jQuery based library of a different name.
+ * The library name must be available at the top most 'window'.
+ ```html
+ <!doctype html>
+ <html ng-app ng-jq="jQueryLib">
+ ...
+ ...
+ </html>
+ ```
+ */
+var jq = function() {
+  if (isDefined(jq.name_)) return jq.name_;
+  var el;
+  var i, ii = ngAttrPrefixes.length;
+  for (i = 0; i < ii; ++i) {
+    if (el = document.querySelector('[' + ngAttrPrefixes[i].replace(':', '\\:') + 'jq]')) {
+      break;
+    }
+  }
 
+  var name;
+  if (el) {
+    name = getNgAttribute(el, "jq");
+  }
+
+  return (jq.name_ = name);
+};
 
 function concat(array1, array2, index) {
   return array1.concat(slice.call(array2, index));
@@ -10735,7 +10790,12 @@ function bindJQuery() {
   }
 
   // bind to jQuery if present;
-  jQuery = window.jQuery;
+  var jqName = jq();
+  jQuery = window.jQuery; // use default jQuery.
+  if (isDefined(jqName)) { // `ngJq` present
+    jQuery = jqName === null ? undefined : window[jqName]; // if empty; use jqLite. if not empty, use jQuery specified by `ngJq`.
+  }
+
   // Use jQuery if it exists with proper functionality, otherwise default to us.
   // Angular 1.2+ requires jQuery 1.7+ for on()/off() support.
   // Angular 1.3+ technically requires at least jQuery 2.1+ but it may work with older
@@ -11327,11 +11387,11 @@ function toDebugString(obj) {
  * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
  */
 var version = {
-  full: '1.4.0-beta.3',    // all of these placeholder strings will be replaced by grunt's
+  full: '1.4.0-beta.4',    // all of these placeholder strings will be replaced by grunt's
   major: 1,    // package task
   minor: 4,
   dot: 0,
-  codeName: 'substance-mimicry'
+  codeName: 'overlyexplosive-poprocks'
 };
 
 
@@ -20696,7 +20756,7 @@ function $LocationProvider() {
 
 
     // rewrite hashbang url <> html5 url
-    if ($location.absUrl() != initialUrl) {
+    if (trimEmptyHash($location.absUrl()) != trimEmptyHash(initialUrl)) {
       $browser.url($location.absUrl(), true);
     }
 
@@ -21938,7 +21998,7 @@ ASTCompiler.prototype = {
           self.if(self.notNull(right), function() {
             self.addEnsureSafeFunction(right);
             forEach(ast.arguments, function(expr) {
-              self.recurse(expr, undefined, undefined, function(argument) {
+              self.recurse(expr, self.nextId(), undefined, function(argument) {
                 args.push(self.ensureSafeObject(argument));
               });
             });
@@ -21969,14 +22029,14 @@ ASTCompiler.prototype = {
           self.addEnsureSafeObject(self.member(left.context, left.name, left.computed));
           expression = self.member(left.context, left.name, left.computed) + ast.operator + right;
           self.assign(intoId, expression);
-          recursionFn(expression);
+          recursionFn(intoId || expression);
         });
       }, 1);
       break;
     case AST.ArrayExpression:
       args = [];
       forEach(ast.elements, function(expr) {
-        self.recurse(expr, undefined, undefined, function(argument) {
+        self.recurse(expr, self.nextId(), undefined, function(argument) {
           args.push(argument);
         });
       });
@@ -21987,7 +22047,7 @@ ASTCompiler.prototype = {
     case AST.ObjectExpression:
       args = [];
       forEach(ast.properties, function(property) {
-        self.recurse(property.value, undefined, undefined, function(expr) {
+        self.recurse(property.value, self.nextId(), undefined, function(expr) {
           args.push(self.escape(
               property.key.type === AST.Identifier ? property.key.name :
                 ('' + property.key.value)) +

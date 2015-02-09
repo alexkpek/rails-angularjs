@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.4.0-beta.3
+ * @license AngularJS v1.4.0-beta.4
  * (c) 2010-2015 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -2138,7 +2138,7 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
 if (window.jasmine || window.mocha) {
 
   var currentSpec = null,
-      annotatedFunctions,
+      annotatedFunctions = [],
       isSpecRunning = function() {
         return !!currentSpec;
       };
