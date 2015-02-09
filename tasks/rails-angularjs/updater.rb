@@ -7,7 +7,7 @@ require 'tempfile'
 module RailsAngularJS
   class Updater
     BASE_URL = 'https://code.angularjs.org'
-    ROOT_PATH = Pathname.new('vendor/assets/javascripts/angularjs')
+    ROOT_PATH = Pathname.new('vendor/assets/javascripts/')
 
     def initialize
     end
