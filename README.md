@@ -32,6 +32,6 @@ For minified version just add .min to file name:
 
 ## Versioning
 
-Current AngularJS version: 1.3.14
+Current AngularJS version: 1.3.15
 
-Current AngularJS unstable version: 1.4.0-beta5
+Current AngularJS unstable version: 1.4.0-beta6
