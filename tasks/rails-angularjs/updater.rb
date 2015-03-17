@@ -73,7 +73,7 @@ module RailsAngularJS
       Nokogiri::HTML.parse(open(url)).
         css('a').
 
-        map{|a| a[:href] =~ /angular.*[\.min]?\.js$/ ? a : nil }.compact.
+        map{|a| a[:href] =~ /angular.*[\.min]?\.(js)|\.(map)$/ ? a : nil }.compact.
 
         each do |a|
           download_file(a[:href], url)
