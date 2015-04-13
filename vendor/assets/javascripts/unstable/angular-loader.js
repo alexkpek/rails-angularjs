@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.4.0-beta.6
+ * @license AngularJS v1.4.0-rc.0
  * (c) 2010-2015 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -58,7 +58,7 @@ function minErr(module, ErrorConstructor) {
       return match;
     });
 
-    message += '\nhttp://errors.angularjs.org/1.4.0-beta.6/' +
+    message += '\nhttp://errors.angularjs.org/1.4.0-rc.0/' +
       (module ? module + '/' : '') + code;
 
     for (i = SKIP_INDEXES, paramPrefix = '?'; i < templateArgs.length; i++, paramPrefix = '&') {
@@ -263,6 +263,18 @@ function setupModuleLoader(window) {
            */
           constant: invokeLater('$provide', 'constant', 'unshift'),
 
+           /**
+           * @ngdoc method
+           * @name angular.Module#decorator
+           * @module ng
+           * @param {string} The name of the service to decorate.
+           * @param {Function} This function will be invoked when the service needs to be
+           *                                    instantiated and should return the decorated service instance.
+           * @description
+           * See {@link auto.$provide#decorator $provide.decorator()}.
+           */
+          decorator: invokeLater('$provide', 'decorator'),
+
           /**
            * @ngdoc method
            * @name angular.Module#animation
@@ -276,7 +288,7 @@ function setupModuleLoader(window) {
            *
            *
            * Defines an animation hook that can be later used with
-           * {@link ngAnimate.$animate $animate} service and directives that use this service.
+           * {@link $animate $animate} service and directives that use this service.
            *
            * ```js
            * module.animation('.animation-name', function($inject1, $inject2) {
@@ -301,10 +313,17 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#filter
            * @module ng
-           * @param {string} name Filter name.
+           * @param {string} name Filter name - this must be a valid angular expression identifier
            * @param {Function} filterFactory Factory function for creating new instance of filter.
            * @description
            * See {@link ng.$filterProvider#register $filterProvider.register()}.
+           *
+           * <div class="alert alert-warning">
+           * **Note:** Filter names must be valid angular {@link expression} identifiers, such as `uppercase` or `orderBy`.
+           * Names with special characters, such as hyphens and dots, are not allowed. If you wish to namespace
+           * your filters, then you can use capitalization (`myappSubsectionFilterx`) or underscores
+           * (`myapp_subsection_filterx`).
+           * </div>
            */
           filter: invokeLater('$filterProvider', 'register'),
 
