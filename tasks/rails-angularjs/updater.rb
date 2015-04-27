@@ -25,7 +25,7 @@ module RailsAngularJS
     end
 
     def current_gem_version
-      raise NotImplementedError
+      Versionomy.parse(RailsAngularJS::VERSION).convert(:rubygems)
     end
 
     def available_versions
@@ -41,6 +41,10 @@ module RailsAngularJS
     end
 
     private
+
+    def own_version(version)
+      version.minor.even? && !version.minor.zero?
+    end
 
     def clean
       base_path.children.each do |f|

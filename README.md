@@ -1,6 +1,6 @@
 #rails-angularjs <a href="http://badge.fury.io/rb/rails-angularjs"><img src="https://badge.fury.io/rb/rails-angularjs.svg" alt="Gem Version" height="18"></a>
 
-Rails-angularjs wraps the [Angular.js](http://angularjs.org) library for use in Rails 3.1 and above. Original version was made by [Hirav Gandhi](https://github.com/hiravgandhi/angularjs-rails). Main difference is that this version will be updating more frequiently, for unstable it's uses angularjs version 1.4.0 and it's serve minified version of files.
+Rails-angularjs wraps the [Angular.js](http://angularjs.org) library for use in Rails 3.1 and above. Original version was made by [Hirav Gandhi](https://github.com/hiravgandhi/angularjs-rails). Main difference is that this version will be updating more frequiently.
 
 ## Usage
 
@@ -17,21 +17,10 @@ If you desire to require (optional) Angular files, you may include them as well 
     //= require angular-animate
     //= require angular-resource
 
-To use the 'unstable' branch, add the following directive to your JavaScript manifest file (application.js):
-
-    //= require unstable/angular
-
-And similarly, for optional Angular assets:
-
-    //= require unstable/angular-animate
-    //= require unstable/angular-resource
-
 For minified version just add .min to file name:
 
     //= require angular.min
 
 ## Versioning
 
-Current AngularJS version: 1.3.15
-
-Current AngularJS unstable version: 1.4.0-rc.0
+Current AngularJS version: 1.4.0-rc.1

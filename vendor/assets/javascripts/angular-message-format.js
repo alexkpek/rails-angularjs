@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.4.0-rc.0
+ * @license AngularJS v1.4.0-rc.1
  * (c) 2010-2015 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -10,11 +10,11 @@
 // This file is compiled with Closure compiler's ADVANCED_OPTIMIZATIONS flag! Be wary of using
 // constructs incompatible with that mode.
 
-var $interpolateMinErr = angular['$interpolateMinErr'];
+var $interpolateMinErr = window['angular']['$interpolateMinErr'];
 
-var noop = angular['noop'],
-    isFunction = angular['isFunction'],
-    toJson = angular['toJson'];
+var noop = window['angular']['noop'],
+    isFunction = window['angular']['isFunction'],
+    toJson = window['angular']['toJson'];
 
 function stringify(value) {
   if (value == null /* null/undefined */) { return ''; }
@@ -56,8 +56,8 @@ function parseTextLiteral(text) {
     return unwatch;
   };
   PARSE_CACHE_FOR_TEXT_LITERALS[text] = parsedFn;
-  parsedFn.exp = text; // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
-  parsedFn.expressions = []; // Require this to call $compile.$$addBindingInfo() which allows Protractor to find elements by binding.
+  parsedFn['exp'] = text; // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
+  parsedFn['expressions'] = []; // Require this to call $compile.$$addBindingInfo() which allows Protractor to find elements by binding.
   return parsedFn;
 }
 
@@ -105,6 +105,8 @@ function MessageSelectorBase(expressionFn, choices) {
   this.parsedFn['$$watchDelegate'] = function $$watchDelegate(scope, listener, objectEquality) {
     return self.watchDelegate(scope, listener, objectEquality);
   };
+  this.parsedFn['exp'] = expressionFn['exp'];
+  this.parsedFn['expressions'] = expressionFn['expressions'];
 }
 
 MessageSelectorBase.prototype.getMessageFn = function getMessageFn(value) {
@@ -294,10 +296,10 @@ InterpolationParts.prototype.toParsedFn = function toParsedFn(mustHaveExpression
     return self.watchDelegate(scope, listener, objectEquality);
   };
 
-  parsedFn.exp = originalText; // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
-  parsedFn.expressions = new Array(this.expressionFns.length); // Require this to call $compile.$$addBindingInfo() which allows Protractor to find elements by binding.
+  parsedFn['exp'] = originalText; // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
+  parsedFn['expressions'] = new Array(this.expressionFns.length); // Require this to call $compile.$$addBindingInfo() which allows Protractor to find elements by binding.
   for (var i = 0; i < this.expressionFns.length; i++) {
-    parsedFn.expressions[i] = this.expressionFns[i].exp;
+    parsedFn['expressions'][i] = this.expressionFns[i]['exp'];
   }
 
   return parsedFn;
@@ -665,7 +667,7 @@ MessageFormatParser.prototype.ruleInInterpolationOrMessageText = function ruleIn
     this.ruleStack.push(this.ruleEndMustacheInInterpolationOrMessage);
     this.rule = this.ruleEnteredMustache;
   } else if (token == "}") {
-    this.choices[this.choiceKey] = this.interpolationParts.toParsedFn(this.mustHaveExpression, this.text);
+    this.choices[this.choiceKey] = this.interpolationParts.toParsedFn(/*mustHaveExpression=*/false, this.text);
     this.rule = this.ruleChoiceKeyword;
   } else if (token == "#") {
     this.interpolationParts.addExpressionFn(this.expressionMinusOffsetFn);
@@ -743,8 +745,8 @@ MessageFormatParser.prototype.ruleEndMustache = function ruleEndMustache() {
     // such a case we do not want to unnecessarily stringify something if it's not going to be used
     // in a string context.
     this.parsedFn = this.$parse(this.expressionFn, this.stringifier);
-    this.parsedFn.exp = this.expressionFn.exp; // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
-    this.parsedFn.expressions = this.expressionFn.expressions; // Require this to call $compile.$$addBindingInfo() which allows Protractor to find elements by binding.
+    this.parsedFn['exp'] = this.expressionFn['exp']; // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
+    this.parsedFn['expressions'] = this.expressionFn['expressions']; // Require this to call $compile.$$addBindingInfo() which allows Protractor to find elements by binding.
   }
   this.rule = null;
 };
@@ -792,7 +794,8 @@ MessageFormatParser.prototype.ruleInAngularExpression = function ruleInAngularEx
       this.index = this.text.length;
       this.expressionFn = this.$parse(this.text.substring(this.expressionStartIndex, this.index));
       // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
-      this.expressionFn.exp = this.text.substring(this.expressionStartIndex, this.index);
+      this.expressionFn['exp'] = this.text.substring(this.expressionStartIndex, this.index);
+      this.expressionFn['expressions'] = this.expressionFn['expressions'];
       this.rule = null;
       return;
     }
@@ -819,7 +822,8 @@ MessageFormatParser.prototype.ruleInAngularExpression = function ruleInAngularEx
       // todo: does this need to be trimmed?
       this.expressionFn = this.$parse(this.text.substring(this.expressionStartIndex, match.index));
       // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
-      this.expressionFn.exp = this.text.substring(this.expressionStartIndex, match.index);
+      this.expressionFn['exp'] = this.text.substring(this.expressionStartIndex, match.index);
+      this.expressionFn['expressions'] = this.expressionFn['expressions'];
       this.rule = null;
       this.rule = this.rulePluralOrSelect;
     }
@@ -847,7 +851,8 @@ MessageFormatParser.prototype.ruleInAngularExpression = function ruleInAngularEx
   this.index = match.index;
   this.expressionFn = this.$parse(this.text.substring(this.expressionStartIndex, this.index));
   // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
-  this.expressionFn.exp = this.text.substring(this.expressionStartIndex, this.index);
+  this.expressionFn['exp'] = this.text.substring(this.expressionStartIndex, this.index);
+  this.expressionFn['expressions'] = this.expressionFn['expressions'];
   this.rule = null;
 };
 
@@ -868,6 +873,58 @@ MessageFormatParser.prototype.ruleInAngularExpression = function ruleInAngularEx
  * Angular internal service to recognize MessageFormat extensions in interpolation expressions.
  * For more information, see:
  * https://docs.google.com/a/google.com/document/d/1pbtW2yvtmFBikfRrJd8VAsabiFkKezmYZ_PbgdjQOVU/edit
+ *
+ * ## Example
+ *
+ * <example name="ngMessageFormat-example" module="msgFmtExample" deps="angular-message-format.min.js">
+ * <file name="index.html">
+ *   <div ng-controller="AppController">
+ *     <button ng-click="decreaseRecipients()" id="decreaseRecipients">decreaseRecipients</button><br>
+ *     <span>{{recipients.length, plural, offset:1
+ *             =0    {{{sender.name}} gave no gifts (\#=#)}
+ *             =1    {{{sender.name}} gave one gift to {{recipients[0].name}} (\#=#)}
+ *             one   {{{sender.name}} gave {{recipients[0].name}} and one other person a gift (\#=#)}
+ *             other {{{sender.name}} gave {{recipients[0].name}} and # other people a gift (\#=#)}
+ *           }}</span>
+ *   </div>
+ * </file>
+ *
+ * <file name="script.js">
+ *   function Person(name, gender) {
+ *     this.name = name;
+ *     this.gender = gender;
+ *   }
+ *
+ *   var alice   = new Person("Alice", "female"),
+ *       bob     = new Person("Bob", "male"),
+ *       charlie = new Person("Charlie", "male"),
+ *       harry   = new Person("Harry Potter", "male");
+ *
+ *   angular.module('msgFmtExample', ['ngMessageFormat'])
+ *     .controller('AppController', ['$scope', function($scope) {
+ *         $scope.recipients = [alice, bob, charlie];
+ *         $scope.sender = harry;
+ *         $scope.decreaseRecipients = function() {
+ *           --$scope.recipients.length;
+ *         };
+ *       }]);
+ * </file>
+ *
+ * <file name="protractor.js" type="protractor">
+ *   describe('MessageFormat plural', function() {
+ *     it('should pluralize initial values', function() {
+ *       var messageElem = element(by.binding('recipients.length')), decreaseRecipientsBtn = element(by.id('decreaseRecipients'));
+ *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and 2 other people a gift (#=2)');
+ *       decreaseRecipientsBtn.click();
+ *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and one other person a gift (#=1)');
+ *       decreaseRecipientsBtn.click();
+ *       expect(messageElem.getText()).toEqual('Harry Potter gave one gift to Alice (#=0)');
+ *       decreaseRecipientsBtn.click();
+ *       expect(messageElem.getText()).toEqual('Harry Potter gave no gifts (#=-1)');
+ *     });
+ *   });
+ * </file>
+ * </example>
  */
 var $$MessageFormatFactory = ['$parse', '$locale', '$sce', '$exceptionHandler', function $$messageFormat(
                    $parse,   $locale,   $sce,   $exceptionHandler) {
@@ -898,7 +955,7 @@ var $$MessageFormatFactory = ['$parse', '$locale', '$sce', '$exceptionHandler', 
 
 var $$interpolateDecorator = ['$$messageFormat', '$delegate', function $$interpolateDecorator($$messageFormat, $interpolate) {
   if ($interpolate['startSymbol']() != "{{" || $interpolate['endSymbol']() != "}}") {
-    throw $interpolateMinErr('nochgmustache', 'angular-messageformat.js currently does not allow you to use custom start and end symbols for interpolation.');
+    throw $interpolateMinErr('nochgmustache', 'angular-message-format.js currently does not allow you to use custom start and end symbols for interpolation.');
   }
   var interpolate = $$messageFormat['interpolate'];
   interpolate['startSymbol'] = $interpolate['startSymbol'];
@@ -910,9 +967,10 @@ var $$interpolateDecorator = ['$$messageFormat', '$delegate', function $$interpo
 /**
  * @ngdoc module
  * @name ngMessageFormat
+ * @packageName angular-message-format
  * @description
  */
-var module = angular['module']('ngMessageFormat', ['ng']);
+var module = window['angular']['module']('ngMessageFormat', ['ng']);
 module['factory']('$$messageFormat', $$MessageFormatFactory);
 module['config'](['$provide', function($provide) {
   $provide['decorator']('$interpolate', $$interpolateDecorator);
