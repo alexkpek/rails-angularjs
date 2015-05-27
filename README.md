@@ -23,4 +23,4 @@ For minified version just add .min to file name:
 
 ## Versioning
 
-Current AngularJS version: 1.4.0-rc.1
+Current AngularJS version: 1.4.0
