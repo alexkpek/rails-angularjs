@@ -43,7 +43,7 @@ module RailsAngularJS
     private
 
     def own_version(version)
-      version.minor.even? && !version.minor.zero?
+      version.minor && !version.minor.zero?
     end
 
     def clean
