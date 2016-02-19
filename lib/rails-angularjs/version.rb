@@ -1,3 +1,3 @@
 module RailsAngularJS
-  VERSION = "1.4.3"
+  VERSION = "1.4.9"
 end

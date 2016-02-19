@@ -17,10 +17,14 @@ If you desire to require (optional) Angular files, you may include them as well 
     //= require angular-animate
     //= require angular-resource
 
+If you using ngCsp, you need to include csp styles:
+
+    *= require angular-csp
+
 For minified version just add .min to file name:
 
     //= require angular.min
 
 ## Versioning
 
-Current AngularJS version: 1.4.3
+Current AngularJS version: 1.4.9
